@@ -16,7 +16,7 @@ class MessagesService {
   }
 
   // Aqui criamos uma mensagem ligada a um usuário
-  async create({ admin_id, text, user_id }) {
+  async create({ admin_id, text, user_id }: IMessageCreate) {
     const message = this.messagesRepository.create({
       admin_id,
       text,
