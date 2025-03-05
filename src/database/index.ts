@@ -1,3 +1,3 @@
-import { createConnection } from "typeorm";
+import { initialize } from "./data-source";
 
-createConnection();
+initialize();

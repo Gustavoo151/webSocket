@@ -9,11 +9,11 @@ interface IConnectionCreate {
   id?: string;
 }
 
-class ConnectionsService {
+export class ConnectionsService {
   private connectionsRepository: Repository<Connection>;
 
   constructor() {
-    this.connectionsRepository = getCustomRepository(ConnectionsRepository);
+    this.connectionsRepository = ConnectionsRepository;
   }
 
   // Aqui criamos o registro de uma conexão e salvamos no banco de dados
@@ -78,5 +78,3 @@ class ConnectionsService {
       .execute();
   }
 }
-
-export { ConnectionsService };
