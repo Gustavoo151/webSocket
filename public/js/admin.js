@@ -60,9 +60,9 @@ function call(id) {
         createDiv.className = "admin_message_admin";
 
         createDiv.innerHTML = `Atendente: <span>${message.text}</span>`;
-        createDiv.innerHTML += `<span class="admin_date>${dayjs(
-          message.created_at
-        ).format("DD/MM/YYYY HH:mm:ss")}`;
+        createDiv.innerHTML += `<span class="admin_date">${dayjs().format(
+          "DD/MM/YYYY HH:mm:ss"
+        )}</span>`;
       }
 
       divMessages.appendChild(createDiv);
@@ -85,9 +85,9 @@ function sendMessage(id) {
   const createDiv = document.createElement("div");
   createDiv.className = "admin_message_admin";
   createDiv.innerHTML = `Atendente: <span>${params.text}</span>`;
-  createDiv.innerHTML += `<span class="admin_date>${dayjs().format(
+  createDiv.innerHTML += `<span class="admin_date">${dayjs().format(
     "DD/MM/YYYY HH:mm:ss"
-  )}`;
+  )}</span>`;
 
   divMessages.appendChild(createDiv);
 

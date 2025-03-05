@@ -5,16 +5,17 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
-    <title></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <title>Support Chat</title>
     <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body>
     <div class="chat chat_support" id="chat_in_support">
         <div class="in_support_header">
-            <span>Em suporte ... </span>
+            <span>Support Chat</span>
             <div class="icon_close" onclick="closeChat();">
                 <img src="/images/close.png" />
             </div>
@@ -22,26 +23,31 @@
 
         <div class="text_support">
             <script id="message-user-template" type="text/template">
-          <div class="client">
-            <span class="name">{{email}}</span>
-            <span class="client message">
-              {{message}}
-              <!-- <label class="date">{{date}}</label> -->
-            </span>
-          </div>
-        </script>
+                <div class="client clearfix">
+                    <div class="message-header">
+                        <span class="name">{{email}}</span>
+                        {{#date}}<span class="message-time">{{date}}</span>{{/date}}
+                    </div>
+                    <div class="message-bubble">
+                        <span class="message">{{message}}</span>
+                    </div>
+                </div>
+            </script>
             <script id="admin-template" type="text/template">
-          <div class="admin">
-            <span class="admin_name">Atendente</span>
-            <span class="admin message"> {{message_admin}} </span>
-            <!-- <label class="date">{{date}}</label> -->
-          </div>
-        </script>
+                <div class="admin clearfix">
+                    <div class="message-header">
+                        <span class="admin_name">Support Agent</span>
+                        {{#date}}<span class="message-time">{{date}}</span>{{/date}}
+                    </div>
+                    <div class="message-bubble">
+                        <span class="message">{{message_admin}}</span>
+                    </div>
+                </div>
+            </script>
             <div id="messages" class="chat__messages"></div>
-            <!-- <div class="line"></div> -->
         </div>
         <div class="message_send">
-            <input type="text" placeholder="Digite sua mensagem aqui" id="message_user" />
+            <input type="text" placeholder="Type your message here..." id="message_user" />
             <div class="send_message_button" id="send_message_button">
                 <img src="/images/send.png" />
             </div>
@@ -50,34 +56,34 @@
 
     <div class="chat chat_support" id="chat_help">
         <div class="in_support_header">
-            <span>Iniciar um chat de suporte</span>
+            <span>Start a support chat</span>
             <div class="icon_close" onclick="closeChat();">
                 <img src="/images/close.png" />
             </div>
         </div>
         <div class="text_support text_help">
             <div class="text_help">
-                <span>Como podemos te ajudar?</span>
-                <textarea name="txt_help" id="txt_help" cols="30" rows="10" onkeydown="keyUpTextHelp(event)" maxlength="250"></textarea>
+                <span>How can we help you today?</span>
+                <textarea name="txt_help" id="txt_help" onkeydown="keyUpTextHelp(event)" maxlength="250" placeholder="Please describe your issue..."></textarea>
                 <span class="charac_remaining">
-                    <label id="charac_remaining">250</label> caracteres restantes</span>
+                    <label id="charac_remaining">250</label> characters remaining</span>
             </div>
 
             <div class="first_email">
-                <span>Seu e-mail</span>
-                <input type="text" name="" id="email" />
+                <span>Your email</span>
+                <input type="text" name="" id="email" placeholder="example@email.com" />
             </div>
 
             <div class="button">
-                <button class="btn_cancel">Cancelar</button>
-                <button class="btn_start_chat" id="start_chat">Iniciar chat</button>
+                <button class="btn_cancel">Cancel</button>
+                <button class="btn_start_chat" id="start_chat">Start chat</button>
             </div>
         </div>
     </div>
 
     <div>
         <button class="btn_support" id="btn_support" onclick="openChat();">
-            <img src="/images/chat.png" /> Suporte
+            <img src="/images/chat.png" /> Need help?
         </button>
     </div>
 </body>
