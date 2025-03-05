@@ -7,8 +7,6 @@ interface IMessageCreate {
 }
 
 export class MessagesService {
-  constructor() {}
-
   // Aqui criamos uma mensagem ligada a um usuário
   async create({ admin_id, text, user_id }: IMessageCreate) {
     const message = MessagesRepository.create({
