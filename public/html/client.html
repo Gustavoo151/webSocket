@@ -8,14 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <title>Support Chat</title>
+    <title>Chat de suporte</title>
     <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body>
     <div class="chat chat_support" id="chat_in_support">
         <div class="in_support_header">
-            <span>Support Chat</span>
+            <span>Chat de suporte</span>
             <div class="icon_close" onclick="closeChat();">
                 <img src="/images/close.png" />
             </div>
@@ -36,7 +36,7 @@
             <script id="admin-template" type="text/template">
                 <div class="admin clearfix">
                     <div class="message-header">
-                        <span class="admin_name">Support Agent</span>
+                        <span class="admin_name">Agente de suporte</span>
                         {{#date}}<span class="message-time">{{date}}</span>{{/date}}
                     </div>
                     <div class="message-bubble">
@@ -56,34 +56,34 @@
 
     <div class="chat chat_support" id="chat_help">
         <div class="in_support_header">
-            <span>Start a support chat</span>
+            <span>Iniciar um chat de suporte</span>
             <div class="icon_close" onclick="closeChat();">
                 <img src="/images/close.png" />
             </div>
         </div>
         <div class="text_support text_help">
             <div class="text_help">
-                <span>How can we help you today?</span>
-                <textarea name="txt_help" id="txt_help" onkeydown="keyUpTextHelp(event)" maxlength="250" placeholder="Please describe your issue..."></textarea>
+                <span>Como podemos ajudar você hoje?</span>
+                <textarea name="txt_help" id="txt_help" onkeydown="keyUpTextHelp(event)" maxlength="250" placeholder="Por favor descreva seu problema..."></textarea>
                 <span class="charac_remaining">
-                    <label id="charac_remaining">250</label> characters remaining</span>
+                    <label id="charac_remaining">250</label> caracteres restantes</span>
             </div>
 
             <div class="first_email">
-                <span>Your email</span>
-                <input type="text" name="" id="email" placeholder="example@email.com" />
+                <span>Seu email</span>
+                <input type="text" name="" id="email" placeholder="exemplo@email.com" />
             </div>
 
             <div class="button">
-                <button class="btn_cancel">Cancel</button>
-                <button class="btn_start_chat" id="start_chat">Start chat</button>
+                <button class="btn_cancel">Cancelar</button>
+                <button class="btn_start_chat" id="start_chat">Iniciar chat</button>
             </div>
         </div>
     </div>
 
     <div>
         <button class="btn_support" id="btn_support" onclick="openChat();">
-            <img src="/images/chat.png" /> Need help?
+            <img src="/images/chat.png" /> Precisa de ajuda?
         </button>
     </div>
 </body>
