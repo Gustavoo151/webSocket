@@ -1,8 +1,4 @@
-import { Repository, EntityRepository } from "typeorm";
-
 import { Setting } from "../entities/Setting";
+import { AppDataSource } from "../database/data-source";
 
-@EntityRepository(Setting)
-class SettingsRepository extends Repository<Setting> {}
-
-export { SettingsRepository };
+export const SettingsRepository = AppDataSource.getRepository(Setting);
