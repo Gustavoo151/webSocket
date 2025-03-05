@@ -10,12 +10,12 @@ const usersController = new UsersController();
 const messageController = new MessagesController();
 
 routes.post("/settings", settingsController.create);
-routes.get("settings/:username", settingsController.findByUsername);
-routes.put("settings/:username", settingsController.update);
+routes.get("settings/:username", settingsController.findByUsername); // Esse endpoint quebra a aplicação quando configura com /
+routes.put("/settings/:username", settingsController.update);
 
 routes.post("/users", usersController.create);
 
-routes.post("messages", messageController.create);
-routes.get("messages/:id", messageController.showByUser);
+routes.post("/messages", messageController.create);
+routes.get("/messages/:id", messageController.showByUser);
 
 export { routes };
