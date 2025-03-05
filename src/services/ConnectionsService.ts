@@ -68,7 +68,7 @@ class ConnectionsService {
   }
 
   // Aqui deletamos um user pelo socket_id
-  async deleteBySocketid(socket_id: string) {
+  async deleteBySocketId(socket_id: string) {
     await this.connectionsRepository
       .createQueryBuilder()
       .delete()
