@@ -45,10 +45,6 @@ body {
   display: block;
 }
 
-.admin .message-bubble {
-  float: left;
-}
-
 .name {
   text-align: right;
   margin-bottom: 0;
