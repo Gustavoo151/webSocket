@@ -1,4 +1,3 @@
-import { getCustomRepository, Repository } from "typeorm";
 import { Connection } from "../entities/Connection";
 import { ConnectionsRepository } from "../repositories/ConnectionsRepository";
 
@@ -10,29 +9,23 @@ interface IConnectionCreate {
 }
 
 export class ConnectionsService {
-  private connectionsRepository: Repository<Connection>;
-
-  constructor() {
-    this.connectionsRepository = ConnectionsRepository;
-  }
-
   // Aqui criamos o registro de uma conexão e salvamos no banco de dados
   async create({ socket_id, user_id, admin_id, id }: IConnectionCreate) {
-    const connection = this.connectionsRepository.create({
+    const connection = ConnectionsRepository.create({
       socket_id,
       user_id,
       admin_id,
       id,
     });
 
-    await this.connectionsRepository.save(connection);
+    await ConnectionsRepository.save(connection);
 
     return connection;
   }
 
   // Aqui podemos fazer a busca por Id de um usuário
   async findByUserId(user_id: string) {
-    const connection = await this.connectionsRepository.findOne({
+    const connection = await ConnectionsRepository.findOne({
       where: { user_id },
     });
     return connection;
@@ -40,7 +33,7 @@ export class ConnectionsService {
 
   // Aqui puxamos todos os usuário menos o Admin
   async findAllWithoutAdmin() {
-    const connections = await this.connectionsRepository.find({
+    const connections = await ConnectionsRepository.find({
       where: { admin_id: null },
       relations: ["user"],
     });
@@ -49,7 +42,7 @@ export class ConnectionsService {
   }
 
   async findBySocketID(socket_id: string) {
-    const connection = await this.connectionsRepository.findOne({
+    const connection = await ConnectionsRepository.findOne({
       where: { socket_id },
     });
 
@@ -57,8 +50,7 @@ export class ConnectionsService {
   }
 
   async updateAdminID(user_id: string, admin_id: string) {
-    await this.connectionsRepository
-      .createQueryBuilder()
+    await ConnectionsRepository.createQueryBuilder()
       .update(Connection)
       .set({ admin_id })
       .where("user_id = :user_id", {
@@ -69,8 +61,7 @@ export class ConnectionsService {
 
   // Aqui deletamos um user pelo socket_id
   async deleteBySocketId(socket_id: string) {
-    await this.connectionsRepository
-      .createQueryBuilder()
+    await ConnectionsRepository.createQueryBuilder()
       .delete()
       .where("socket_id = :socket_id", {
         socket_id,
