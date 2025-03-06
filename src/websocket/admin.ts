@@ -25,7 +25,7 @@ io.on("connect", async (socket) => {
     await messageService.create({
       text,
       user_id,
-      admin_id: socket.id,
+      admin_id: socket.id, // Esse socket id vem de dentro do proprio socket
     });
 
     const { socket_id } = await connectionsService.findByUserId(user_id);
