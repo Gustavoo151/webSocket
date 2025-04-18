@@ -1,7 +1,7 @@
 import { io } from "../http";
 import { ConnectionsService } from "../services/ConnectionsService";
 import { MessagesService } from "../services/MessagesService";
-import { UsersService } from "../services/UsersService";
+import { UsersService } from "../services/usersService";
 
 interface IParams {
   text: string;
