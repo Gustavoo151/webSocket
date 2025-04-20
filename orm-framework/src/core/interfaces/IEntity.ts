@@ -18,7 +18,7 @@ export interface IEntity<T = any> {
   isValid?(): boolean;
 
   /**
-   * Define métodos opcionais de ciclos que podem ser implementados pelas entidades
+   * Define métodos opcionais de ciclo que podem ser implementados pelas entidades
    */
   beforeInsert?(): void | Promise<void>;
   afterInsert?(): void | Promise<void>;
