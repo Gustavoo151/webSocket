@@ -2,7 +2,6 @@
  * Interface genérica para repositórios do ORM
  * Define operações padrão de acesso e manipulção de dados que todos os repositórios dev
  */
-
 export interface FindOptions {
   skip?: number;
   take?: number;
@@ -92,4 +91,11 @@ export interface IRepository<Entity, IdType = any> {
     entityOrId: Entity | IdType,
     options?: RemoveOptions
   ): Promise<boolean>;
+
+  /**
+   * Cria um QueryBuilder para construção de queries complexas
+   * @param alias Alias opcional para a entidade principal
+   * @returns Uma instância de queryBuild
+   */
+  createQueryBuilder(alias?: string): any;
 }
