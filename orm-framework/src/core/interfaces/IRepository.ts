@@ -10,22 +10,24 @@ export interface FindOptions {
   // Indica se deve usar cache
   cache?: boolean | number;
 }
-
+export interface FindOneOptions extends FindOptions {
+  // Se deve lançar erro quando não encontrar
+  throwIfNotFound?: boolean;
+}
 export interface SaveOptions {
-  data?: any;
-  listeners?: boolean;
-  transaction?: boolean;
-  chunk?: number;
+  // Se deve validar a entidade antes de salvar
+  validate?: boolean;
+  // Se deve recarregar a entidade após salvar
   reload?: boolean;
+  // Se deve executar hooks de ciclo de vida
+  hooks?: boolean;
 }
-
 export interface RemoveOptions {
-  data?: any;
-  listeners?: boolean;
-  transaction?: boolean;
-  chunk?: number;
+  // Se deve usar soft delete (marcando como removido em vez de excluir)
+  softDelete?: boolean;
+  // Se deve executar hooks de ciclo de vida
+  hooks?: boolean;
 }
-
 export interface IRepository<Entity, IdType = any> {
   /**
    * Busca uma entidade pelo seu ID
@@ -100,4 +102,13 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Uma instância de queryBuild
    */
   createQueryBuilder(alias?: string): any;
+
+  /**
+   * Executa operações dentro de uma transação
+   * @param operation Função que contém as operações a serem executadas na transação
+   * @returns Promise que resolve para o resultado da operação
+   */
+  transaction<T>(
+    operation: (repository: IRepository<Entity, IdType>) => Promise<T>
+  ): Promise<T>;
 }
