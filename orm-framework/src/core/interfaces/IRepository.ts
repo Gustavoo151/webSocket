@@ -1,33 +1,3 @@
-export interface FindOptions {
-  // Relacionamentos a serem carregados
-  relations?: string[];
-  // Ordenação dos resultados
-  orderBy?: Record<string, "ASC" | "DESC">;
-  // Número máximo de resultados
-  limit?: number;
-  // Número de resultados para pular (offset)
-  skip?: number;
-  // Indica se deve usar cache
-  cache?: boolean | number;
-}
-export interface FindOneOptions extends FindOptions {
-  // Se deve lançar erro quando não encontrar
-  throwIfNotFound?: boolean;
-}
-export interface SaveOptions {
-  // Se deve validar a entidade antes de salvar
-  validate?: boolean;
-  // Se deve recarregar a entidade após salvar
-  reload?: boolean;
-  // Se deve executar hooks de ciclo de vida
-  hooks?: boolean;
-}
-export interface RemoveOptions {
-  // Se deve usar soft delete (marcando como removido em vez de excluir)
-  softDelete?: boolean;
-  // Se deve executar hooks de ciclo de vida
-  hooks?: boolean;
-}
 export interface IRepository<Entity, IdType = any> {
   /**
    * Busca uma entidade pelo seu ID
@@ -119,4 +89,43 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolve para a entidade com relacionamentos
    */
   loadRelations(entity: Entity, relations: string[]): Promise<Entity>;
+
+  /**
+   * Executa uma operação em lote em multiplas entidades
+   * @param entities Array de entidades para operação em lote
+   * @param operation O tipo de operação (save, remove)
+   * @returns Promise que resolve para o resultado da operação
+   */
+  batch<T>(entities: Entity[], operation: "save" | "remove"): Promise<T>;
+}
+
+export interface FindOptions {
+  // Relacionamentos a serem carregados
+  relations?: string[];
+  // Ordenação dos resultados
+  orderBy?: Record<string, "ASC" | "DESC">;
+  // Número máximo de resultados
+  limit?: number;
+  // Número de resultados para pular (offset)
+  skip?: number;
+  // Indica se deve usar cache
+  cache?: boolean | number;
+}
+export interface FindOneOptions extends FindOptions {
+  // Se deve lançar erro quando não encontrar
+  throwIfNotFound?: boolean;
+}
+export interface SaveOptions {
+  // Se deve validar a entidade antes de salvar
+  validate?: boolean;
+  // Se deve recarregar a entidade após salvar
+  reload?: boolean;
+  // Se deve executar hooks de ciclo de vida
+  hooks?: boolean;
+}
+export interface RemoveOptions {
+  // Se deve usar soft delete (marcando como removido em vez de excluir)
+  softDelete?: boolean;
+  // Se deve executar hooks de ciclo de vida
+  hooks?: boolean;
 }
