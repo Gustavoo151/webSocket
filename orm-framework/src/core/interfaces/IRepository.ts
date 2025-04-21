@@ -111,4 +111,12 @@ export interface IRepository<Entity, IdType = any> {
   transaction<T>(
     operation: (repository: IRepository<Entity, IdType>) => Promise<T>
   ): Promise<T>;
+
+  /**
+   * Carrega relacionamentos específicos para uma entidade
+   * @param entiry A entidade para carregar relacionamentos
+   * @param relations Array de nomes de relacionamentos a carregar
+   * @returns Promise que resolve para a entidade com relacionamentos
+   */
+  loadRelations(entity: Entity, relations: string[]): Promise<Entity>;
 }
