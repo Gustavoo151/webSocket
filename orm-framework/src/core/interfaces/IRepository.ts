@@ -1,12 +1,14 @@
-/**
- * Interface genérica para repositórios do ORM
- * Define operações padrão de acesso e manipulção de dados que todos os repositórios dev
- */
 export interface FindOptions {
-  skip?: number;
-  take?: number;
-  order?: Record<string, "ASC" | "DESC">;
+  // Relacionamentos a serem carregados
   relations?: string[];
+  // Ordenação dos resultados
+  orderBy?: Record<string, "ASC" | "DESC">;
+  // Número máximo de resultados
+  limit?: number;
+  // Número de resultados para pular (offset)
+  skip?: number;
+  // Indica se deve usar cache
+  cache?: boolean | number;
 }
 
 export interface SaveOptions {
