@@ -10,6 +10,16 @@ export interface FindOptions {
   relations?: string[];
 }
 
+export interface SaveOptions {
+  reload?: boolean;
+  runValidation?: boolean;
+  transaction?: any;
+  updateTimestamp?: boolean;
+  cascade?: boolean;
+  skipHooks?: boolean;
+  chunkSize?: number;
+}
+
 export interface IRepository<Entity, IdType = any> {
   /**
    * Busca uma entidade pelo seu ID
@@ -43,4 +53,12 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolve para o número de entidades
    */
   count(criteria?: Record<string, any>): Promise<number>;
+
+  /**
+   * Salva a entidade no banco de dados (inserção ou atualização)
+   * @param entity A entidade a ser salva
+   * @param options Opções como validação, recarregando, etc.
+   * @returns Promise que resolva para a entidade salva
+   */
+  save(entity: Entity, options?: SaveOptions): Promise<Entity>;
 }
