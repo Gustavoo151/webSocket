@@ -42,4 +42,5 @@ export interface IRepository<Entity, IdType = any> {
    * @param criteria Objeto com condições de filtro
    * @returns Promise que resolve para o número de entidades
    */
+  count(criteria?: Record<string, any>): Promise<number>;
 }
