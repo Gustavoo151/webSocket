@@ -61,4 +61,11 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolva para a entidade salva
    */
   save(entity: Entity, options?: SaveOptions): Promise<Entity>;
+
+  /**
+   * Insere uma nova entidade no banco de dados
+   * @param entity A entidade a ser inserida
+   * @returns Promise que resolva para a entidade inserida
+   */
+  insert(entity: Entity): Promise<Entity>;
 }
