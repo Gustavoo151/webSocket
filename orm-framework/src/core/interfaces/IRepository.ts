@@ -36,4 +36,10 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolve para a entidade encontrada ou null
    */
   findOne(criteria?: Record<string, any>): Promise<number>;
+
+  /**
+   * Conta o número de entidades que correspondem aos critérios
+   * @param criteria Objeto com condições de filtro
+   * @returns Promise que resolve para o número de entidades
+   */
 }
