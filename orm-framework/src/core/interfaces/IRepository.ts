@@ -11,13 +11,18 @@ export interface FindOptions {
 }
 
 export interface SaveOptions {
+  data?: any;
+  listeners?: boolean;
+  transaction?: boolean;
+  chunk?: number;
   reload?: boolean;
-  runValidation?: boolean;
-  transaction?: any;
-  updateTimestamp?: boolean;
-  cascade?: boolean;
-  skipHooks?: boolean;
-  chunkSize?: number;
+}
+
+export interface RemoveOptions {
+  data?: any;
+  listeners?: boolean;
+  transaction?: boolean;
+  chunk?: number;
 }
 
 export interface IRepository<Entity, IdType = any> {
@@ -76,4 +81,15 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolva para a entidade atualizada
    */
   update(id: IdType, partialEntity: Partial<Entity>): Promise<Entity>;
+
+  /**
+   * Remove uma entidade do banco de dados
+   * @param entityOrId A entidade ou seu ID a ser removido
+   * @param options Opções como soft delete
+   * @returns Promise que resolve para boolean indicando sucesso
+   */
+  remove(
+    entityOrId: Entity | IdType,
+    options?: RemoveOptions
+  ): Promise<boolean>;
 }
