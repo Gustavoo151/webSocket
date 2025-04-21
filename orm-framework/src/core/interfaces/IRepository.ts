@@ -29,4 +29,11 @@ export interface IRepository<Entity, IdType = any> {
     criteria?: Record<string, any>,
     options?: FindOptions
   ): Promise<Entity[]>;
+
+  /**
+   * Busca uma única entidade que corresponde aos critérios
+   * @param criteria Objeto com condições de filtro
+   * @returns Promise que resolve para a entidade encontrada ou null
+   */
+  findOne(criteria?: Record<string, any>): Promise<number>;
 }
