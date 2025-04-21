@@ -68,4 +68,12 @@ export interface IRepository<Entity, IdType = any> {
    * @returns Promise que resolva para a entidade inserida
    */
   insert(entity: Entity): Promise<Entity>;
+
+  /**
+   * Atualiza uma entidade existente no banco de dados
+   * @param id o identificador da entidade a ser atualizada
+   * @param partialEntity Dados parciais para atualização
+   * @returns Promise que resolva para a entidade atualizada
+   */
+  update(id: IdType, partialEntity: Partial<Entity>): Promise<Entity>;
 }
