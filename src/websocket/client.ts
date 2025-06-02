@@ -8,6 +8,13 @@ interface IParams {
   email: string;
 }
 
+interface IFileParams {
+  fileName: string;
+  mimeType: string;
+  fileData: string; // Base64 encoded
+  email: string;
+}
+
 io.on("connect", (socket) => {
   const connectionsService = new ConnectionsService();
   const usersService = new UsersService();
