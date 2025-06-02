@@ -1,8 +1,8 @@
 import { io } from "../http";
 import { ConnectionsService } from "../services/ConnectionsService";
+import { FileService } from "../services/FileService";
 import { MessagesService } from "../services/MessagesService";
 import { UsersService } from "../services/usersService";
-
 interface IParams {
   text: string;
   email: string;
@@ -15,10 +15,19 @@ interface IFileParams {
   email: string;
 }
 
+interface IMessageCreate {
+  text: string;
+  user_id: string;
+  file_id?: string;
+  file_name?: string;
+  file_type?: string;
+}
+
 io.on("connect", (socket) => {
   const connectionsService = new ConnectionsService();
   const usersService = new UsersService();
   const messagesService = new MessagesService();
+  const fileService = new FileService();
 
   socket.on("client_first_access", async (params) => {
     const socket_id = socket.id;
@@ -89,5 +98,70 @@ io.on("connect", (socket) => {
   socket.on("disconnect", async () => {
     console.log(socket.id);
     await connectionsService.deleteBySocketId(socket.id);
+  });
+
+  socket.on("client_send_file", async (params: IFileParams) => {
+    try {
+      const { fileName, mimeType, fileData, email } = params;
+      const socket_id = socket.id;
+
+      // Converte base64 para buffer (ByteArrayInputStream concept)
+      const fileBuffer = Buffer.from(fileData, "base64");
+
+      // Busca o usuário
+      const user = await usersService.findByEmail(email);
+      if (!user) {
+        socket.emit("file_upload_error", { message: "Usuário não encontrado" });
+        return;
+      }
+
+      // Salva o arquivo
+      const savedFile = await fileService.saveFile(
+        fileBuffer,
+        fileName,
+        mimeType,
+        user.id
+      );
+
+      // Cria mensagem com referência ao arquivo
+      const message = await messagesService.create({
+        text: `📎 Arquivo enviado: ${fileName}`,
+        user_id: user.id,
+        file_id: savedFile.id,
+        file_name: fileName,
+        file_type: mimeType,
+      });
+
+      // Emite confirmação para o cliente
+      socket.emit("file_upload_success", {
+        fileId: savedFile.id,
+        fileName: savedFile.fileName,
+        message,
+      });
+
+      // Busca conexão para enviar para admin
+      const connection = await connectionsService.findByUserId(user.id);
+      if (connection && connection.admin_id) {
+        io.to(connection.admin_id).emit("admin_receive_file", {
+          message,
+          socket_id,
+          fileData: {
+            id: savedFile.id,
+            fileName: savedFile.fileName,
+            mimeType: savedFile.mimeType,
+            size: savedFile.size,
+          },
+        });
+      }
+
+      // Atualiza lista de usuários para admin
+      const allUsers = await connectionsService.findAllWithoutAdmin();
+      io.emit("admin_list_all_users", allUsers);
+    } catch (error) {
+      console.error("Erro ao processar arquivo:", error);
+      socket.emit("file_upload_error", {
+        message: "Erro ao processar arquivo",
+      });
+    }
   });
 });
