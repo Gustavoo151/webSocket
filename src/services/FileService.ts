@@ -14,7 +14,7 @@ interface IFileData {
 class FileService {
   private uploadDir = path.join(__dirname, "../../uploads");
 
-  constructir() {
+  constructor() {
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
