@@ -338,3 +338,18 @@ function getFileIcon(fileName) {
       return "📎";
   }
 }
+
+function getFileSizeString(fileName) {
+  // Esta é uma função placeholder
+  // Em um caso real, você receberia o tamanho do servidor
+  return "Tamanho desconhecido";
+}
+
+// Permitir envio com Enter
+document
+  .getElementById("message_user")
+  .addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+      document.getElementById("send_message_button").click();
+    }
+  });
