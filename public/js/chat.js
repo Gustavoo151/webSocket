@@ -126,3 +126,51 @@ document.getElementById("file_input").addEventListener("change", (event) => {
     uploadFile(file);
   }
 });
+
+// Função para fazer upload do arquivo
+function uploadFile(file) {
+  // Validar tamanho do arquivo (máximo 10MB)
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    alert("Arquivo muito grande! Tamanho máximo: 10MB");
+    return;
+  }
+
+  // Mostrar progress bar
+  const progressDiv = document.getElementById("upload_progress");
+  const progressFill = document.getElementById("progress_fill");
+  const progressText = document.getElementById("progress_text");
+
+  progressDiv.style.display = "block";
+  progressText.textContent = `Enviando ${file.name}...`;
+
+  const reader = new FileReader();
+
+  reader.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const percentComplete = (e.loaded / e.total) * 100;
+      progressFill.style.width = percentComplete + "%";
+    }
+  };
+
+  reader.onload = function (e) {
+    const arrayBuffer = e.target.result;
+    const base64String = btoa(
+      String.fromCharCode(...new Uint8Array(arrayBuffer))
+    );
+
+    socket.emit("client_send_file", {
+      fileName: file.name,
+      mimeType: file.type || "application/octet-stream",
+      fileData: base64String,
+      email: emailUser,
+    });
+  };
+
+  reader.onerror = function () {
+    alert("Erro ao ler o arquivo");
+    progressDiv.style.display = "none";
+  };
+
+  reader.readAsArrayBuffer(file);
+}
