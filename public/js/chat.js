@@ -256,3 +256,39 @@ function downloadFile(fileId, fileName) {
     button.disabled = false;
   }, 10000);
 }
+
+socket.on("file_download_success", (data) => {
+  const { fileName, mimeType, fileData } = data;
+
+  try {
+    // Converte base64 de volta para blob
+    const byteCharacters = atob(fileData);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+
+    // Criar link para download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    // Restaurar todos os botões de download
+    document.querySelectorAll(".file-download-btn").forEach((btn) => {
+      btn.textContent = "📥 Download";
+      btn.disabled = false;
+    });
+  } catch (error) {
+    console.error("Erro ao baixar arquivo:", error);
+    alert("Erro ao baixar arquivo");
+  }
+});
