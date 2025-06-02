@@ -196,3 +196,7 @@ socket.on("file_upload_error", (data) => {
   // Limpar input de arquivo
   document.getElementById("file_input").value = "";
 });
+
+socket.on("admin_send_file_to_client", (data) => {
+  addFileMessage(data.fileData.fileName, data.fileData.id, data.message, false);
+});
