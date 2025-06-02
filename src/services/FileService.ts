@@ -1,14 +1,32 @@
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+
 interface IFileData {
   id: string;
   fileName: string;
-  mimeType: string; // e.g., "image/png"
+  mimeType: string;
   size: number;
   uploadDate: Date;
-  user_id: string; // ID of the user who uploaded the file
-  filePath: string; // Path to the file on the server
+  user_id: string;
+  filePath: string;
+}
+
+// Simular um banco de dados de metadados de arquivos em memória
+class FileMetadataStore {
+  private static files: Map<string, IFileData> = new Map();
+
+  static save(fileData: IFileData): void {
+    this.files.set(fileData.id, fileData);
+  }
+
+  static get(fileId: string): IFileData | undefined {
+    return this.files.get(fileId);
+  }
+
+  static delete(fileId: string): boolean {
+    return this.files.delete(fileId);
+  }
 }
 
 class FileService {
@@ -50,9 +68,11 @@ class FileService {
           size: fileBuffer.length,
           uploadDate: new Date(),
           user_id,
-          filePath,
+          filePath: safeName, // Salvar apenas o nome do arquivo
         };
 
+        // Salvar metadados no store
+        FileMetadataStore.save(fileData);
         resolve(fileData);
       });
     });
@@ -62,10 +82,18 @@ class FileService {
     fileId: string
   ): Promise<{ buffer: Buffer; fileData: IFileData } | null> {
     try {
-      // Aqui você buscaria os dados do arquivo no banco de dados
-      const filePath = path.join(this.uploadDir, `${fileId}.pdf`); // Exemplo para PDF, ajuste conforme necessário
+      // Buscar metadados do arquivo
+      const fileData = FileMetadataStore.get(fileId);
+
+      if (!fileData) {
+        console.log(`Arquivo não encontrado nos metadados: ${fileId}`);
+        return null;
+      }
+
+      const filePath = path.join(this.uploadDir, fileData.filePath);
 
       if (!fs.existsSync(filePath)) {
+        console.log(`Arquivo físico não encontrado: ${filePath}`);
         return null;
       }
 
@@ -80,20 +108,13 @@ class FileService {
 
         readStream.on("end", () => {
           const buffer = Buffer.concat(chunks);
-          const fileData: IFileData = {
-            id: fileId,
-            fileName: `file_${fileId}.pdf`,
-            mimeType: "application/pdf",
-            size: buffer.length,
-            uploadDate: new Date(),
-            user_id: "",
-            filePath,
-          };
-
           resolve({ buffer, fileData });
         });
 
-        readStream.on("error", reject);
+        readStream.on("error", (error) => {
+          console.error("Erro ao ler arquivo:", error);
+          reject(error);
+        });
       });
     } catch (error) {
       console.error("Error retrieving file:", error);
@@ -103,10 +124,17 @@ class FileService {
 
   async deleteFile(fileId: string): Promise<boolean> {
     try {
-      const filePath = path.join(this.uploadDir, `${fileId}.pdf`);
+      const fileData = FileMetadataStore.get(fileId);
+
+      if (!fileData) {
+        return false;
+      }
+
+      const filePath = path.join(this.uploadDir, fileData.filePath);
 
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
+        FileMetadataStore.delete(fileId);
         return true;
       }
 
