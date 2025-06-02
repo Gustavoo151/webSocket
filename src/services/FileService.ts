@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
-
+import { v4 as uuidv4 } from "uuid";
 interface IFileData {
   id: string;
-  filename: string;
-  mimetype: string; // e.g., "image/png"
+  fileName: string;
+  mimeType: string; // e.g., "image/png"
   size: number;
-  uploadedAt: Date;
+  uploadDate: Date;
   user_id: string; // ID of the user who uploaded the file
   filePath: string; // Path to the file on the server
 }
@@ -18,5 +18,43 @@ class FileService {
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
+  }
+
+  async saveFile(
+    fileBuffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    user_id: string
+  ): Promise<IFileData> {
+    const fileId = uuidv4();
+    const fileExtension = path.extname(fileName);
+    const safeName = `${fileId}${fileExtension}`;
+    const filePath = path.join(this.uploadDir, safeName);
+
+    // Salva o arquivo usando FileInputStream concept
+    const writeStream = fs.createWriteStream(filePath);
+
+    return new Promise((resolve, reject) => {
+      writeStream.write(fileBuffer, (error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        writeStream.end();
+
+        const fileData: IFileData = {
+          id: fileId,
+          fileName,
+          mimeType,
+          size: fileBuffer.length,
+          uploadDate: new Date(),
+          user_id,
+          filePath,
+        };
+
+        resolve(fileData);
+      });
+    });
   }
 }
