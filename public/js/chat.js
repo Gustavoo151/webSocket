@@ -38,18 +38,26 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
 
     messages.forEach((message) => {
       if (message.admin_id === null) {
-        const rendered = Mustache.render(template_client, {
-          message: message.text,
-          email,
-        });
-
-        document.getElementById("messages").innerHTML += rendered;
+        // Verificar se é uma mensagem com arquivo
+        if (message.file_id) {
+          addFileMessage(message.file_name, message.file_id, message, true);
+        } else {
+          const rendered = Mustache.render(template_client, {
+            message: message.text,
+            email,
+          });
+          document.getElementById("messages").innerHTML += rendered;
+        }
       } else {
-        const rendered = Mustache.render(template_admin, {
-          message_admin: message.text,
-        });
-
-        document.getElementById("messages").innerHTML += rendered;
+        // Verificar se é uma mensagem com arquivo do admin
+        if (message.file_id) {
+          addFileMessage(message.file_name, message.file_id, message, false);
+        } else {
+          const rendered = Mustache.render(template_admin, {
+            message_admin: message.text,
+          });
+          document.getElementById("messages").innerHTML += rendered;
+        }
       }
     });
   });
@@ -65,27 +73,101 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
 
     document.getElementById("messages").innerHTML += rendered;
   });
-});
 
-// Manipulação de envio de mensagens de texto
-document.getElementById("start_chat").addEventListener("click", (event) => {
-  const chat_help = document.getElementById("chat_help");
-  chat_help.style.display = "none";
+  // ==================== FUNCIONALIDADES DE ARQUIVO ====================
 
-  const chat_in_support = document.getElementById("chat_in_support");
-  chat_in_support.style.display = "block";
+  // Configurar botão de anexar arquivo
+  document.getElementById("attach_file_btn").addEventListener("click", () => {
+    document.getElementById("file_input").click();
+  });
 
-  const email = document.getElementById("email").value;
-  const text = document.getElementById("txt_help").value;
+  // Manipular seleção de arquivo
+  document.getElementById("file_input").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      uploadFile(file);
+    }
+  });
 
-  emailUser = email;
+  // Eventos de resposta do servidor para arquivos
+  socket.on("file_upload_success", (data) => {
+    const progressDiv = document.getElementById("upload_progress");
+    progressDiv.style.display = "none";
 
-  socket.emit("client_first_access", {
-    text,
-    email,
+    // Adicionar mensagem de arquivo na conversa
+    addFileMessage(data.fileName, data.fileId, data.message, true);
+
+    // Limpar input de arquivo
+    document.getElementById("file_input").value = "";
+  });
+
+  socket.on("file_upload_error", (data) => {
+    const progressDiv = document.getElementById("upload_progress");
+    progressDiv.style.display = "none";
+
+    alert(`Erro ao enviar arquivo: ${data.message}`);
+
+    // Limpar input de arquivo
+    document.getElementById("file_input").value = "";
+  });
+
+  socket.on("admin_send_file_to_client", (data) => {
+    addFileMessage(
+      data.fileData.fileName,
+      data.fileData.id,
+      data.message,
+      false
+    );
+  });
+
+  socket.on("file_download_success", (data) => {
+    const { fileName, mimeType, fileData } = data;
+
+    try {
+      // Converte base64 de volta para blob
+      const byteCharacters = atob(fileData);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+
+      // Criar link para download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      // Restaurar todos os botões de download
+      document.querySelectorAll(".file-download-btn").forEach((btn) => {
+        btn.textContent = "📥 Download";
+        btn.disabled = false;
+      });
+    } catch (error) {
+      console.error("Erro ao baixar arquivo:", error);
+      alert("Erro ao baixar arquivo");
+    }
+  });
+
+  socket.on("file_download_error", (data) => {
+    alert(`Erro ao baixar arquivo: ${data.message}`);
+
+    // Restaurar todos os botões de download
+    document.querySelectorAll(".file-download-btn").forEach((btn) => {
+      btn.textContent = "📥 Download";
+      btn.disabled = false;
+    });
   });
 });
 
+// Manipulação de envio de mensagens de texto
 document
   .querySelector("#send_message_button")
   .addEventListener("click", (event) => {
@@ -111,21 +193,6 @@ document
 
     document.getElementById("message_user").value = "";
   });
-
-// ==================== FUNCIONALIDADES DE ARQUIVO ====================
-
-// Configurar botão de anexar arquivo
-document.getElementById("attach_file_btn").addEventListener("click", () => {
-  document.getElementById("file_input").click();
-});
-
-// Manipular seleção de arquivo
-document.getElementById("file_input").addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    uploadFile(file);
-  }
-});
 
 // Função para fazer upload do arquivo
 function uploadFile(file) {
@@ -175,36 +242,6 @@ function uploadFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// Eventos de resposta do servidor para arquivos
-socket.on("file_upload_success", (data) => {
-  const progressDiv = document.getElementById("upload_progress");
-  progressDiv.style.display = "none";
-
-  // Adicionar mensagem de arquivo na conversa
-  addFileMessage(data.fileName, data.fileId, data.message, true);
-
-  // Limpar input de arquivo
-  document.getElementById("file_input").value = "";
-});
-
-socket.on("file_upload_error", (data) => {
-  const progressDiv = document.getElementById("upload_progress");
-  progressDiv.style.display = "none";
-
-  alert(`Erro ao enviar arquivo: ${data.message}`);
-
-  // Limpar input de arquivo
-  document.getElementById("file_input").value = "";
-});
-
-socket.on("admin_send_file_to_client", (data) => {
-  addFileMessage(data.fileData.fileName, data.fileData.id, data.message, false);
-});
-
-socket.on("admin_receive_file", (data) => {
-  // Este evento é para o admin, não precisa tratar no cliente
-});
-
 // Função para adicionar mensagem de arquivo na conversa
 function addFileMessage(fileName, fileId, message, isFromUser) {
   const messagesDiv = document.getElementById("messages");
@@ -212,15 +249,17 @@ function addFileMessage(fileName, fileId, message, isFromUser) {
   const fileDiv = document.createElement("div");
   fileDiv.className = isFromUser ? "client clearfix" : "admin clearfix";
 
-  const fileSize = getFileSizeString(fileName);
   const fileIcon = getFileIcon(fileName);
+  const fileSize = formatFileSize(message.size || 0);
 
   fileDiv.innerHTML = `
     <div class="message-header">
       <span class="${isFromUser ? "name" : "admin_name"}">
         ${isFromUser ? emailUser : "Agente de suporte"}
       </span>
-      <span class="message-time">${new Date().toLocaleString()}</span>
+      <span class="message-time">${new Date(
+        message.created_at || new Date()
+      ).toLocaleString()}</span>
     </div>
     <div class="message-bubble">
       <div class="file-message">
@@ -256,52 +295,6 @@ function downloadFile(fileId, fileName) {
     button.disabled = false;
   }, 10000);
 }
-
-socket.on("file_download_success", (data) => {
-  const { fileName, mimeType, fileData } = data;
-
-  try {
-    // Converte base64 de volta para blob
-    const byteCharacters = atob(fileData);
-    const byteNumbers = new Array(byteCharacters.length);
-
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: mimeType });
-
-    // Criar link para download
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    // Restaurar todos os botões de download
-    document.querySelectorAll(".file-download-btn").forEach((btn) => {
-      btn.textContent = "📥 Download";
-      btn.disabled = false;
-    });
-  } catch (error) {
-    console.error("Erro ao baixar arquivo:", error);
-    alert("Erro ao baixar arquivo");
-  }
-});
-
-socket.on("file_download_error", (data) => {
-  alert(`Erro ao baixar arquivo: ${data.message}`);
-
-  // Restaurar todos os botões de download
-  document.querySelectorAll(".file-download-btn").forEach((btn) => {
-    btn.textContent = "📥 Download";
-    btn.disabled = false;
-  });
-});
 
 // Funções auxiliares
 function getFileIcon(fileName) {
@@ -339,10 +332,14 @@ function getFileIcon(fileName) {
   }
 }
 
-function getFileSizeString(fileName) {
-  // Esta é uma função placeholder
-  // Em um caso real, você receberia o tamanho do servidor
-  return "Tamanho desconhecido";
+function formatFileSize(bytes) {
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
 // Permitir envio com Enter
