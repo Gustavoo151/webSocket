@@ -186,3 +186,13 @@ socket.on("file_upload_success", (data) => {
   // Limpar input de arquivo
   document.getElementById("file_input").value = "";
 });
+
+socket.on("file_upload_error", (data) => {
+  const progressDiv = document.getElementById("upload_progress");
+  progressDiv.style.display = "none";
+
+  alert(`Erro ao enviar arquivo: ${data.message}`);
+
+  // Limpar input de arquivo
+  document.getElementById("file_input").value = "";
+});
