@@ -79,7 +79,7 @@ io.on("connect", async (socket) => {
         file_id: savedFile.id,
         file_name: fileName,
         file_type: mimeType,
-      } as );
+      } as IMessageCreate);
 
       // Envia para o cliente
       const { socket_id } = await connectionsService.findByUserId(user_id);
