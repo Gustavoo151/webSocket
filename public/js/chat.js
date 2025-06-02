@@ -174,3 +174,15 @@ function uploadFile(file) {
 
   reader.readAsArrayBuffer(file);
 }
+
+// Eventos de resposta do servidor para arquivos
+socket.on("file_upload_success", (data) => {
+  const progressDiv = document.getElementById("upload_progress");
+  progressDiv.style.display = "none";
+
+  // Adicionar mensagem de arquivo na conversa
+  addFileMessage(data.fileName, data.fileId, data.message, true);
+
+  // Limpar input de arquivo
+  document.getElementById("file_input").value = "";
+});
