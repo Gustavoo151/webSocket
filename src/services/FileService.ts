@@ -57,4 +57,47 @@ class FileService {
       });
     });
   }
+
+  async getFile(
+    fileId: string
+  ): Promise<{ buffer: Buffer; fileData: IFileData } | null> {
+    try {
+      // Aqui você buscaria os dados do arquivo no banco de dados
+      const filePath = path.join(this.uploadDir, `${fileId}.pdf`); // Exemplo para PDF, ajuste conforme necessário
+
+      if (!fs.existsSync(filePath)) {
+        return null;
+      }
+
+      // Lê o arquivo usando conceito similar ao FileInputStream
+      const readStream = fs.createReadStream(filePath);
+      const chunks: Buffer[] = [];
+
+      return new Promise((resolve, reject) => {
+        readStream.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+
+        readStream.on("end", () => {
+          const buffer = Buffer.concat(chunks);
+          const fileData: IFileData = {
+            id: fileId,
+            fileName: `file_${fileId}.pdf`,
+            mimeType: "application/pdf",
+            size: buffer.length,
+            uploadDate: new Date(),
+            user_id: "",
+            filePath,
+          };
+
+          resolve({ buffer, fileData });
+        });
+
+        readStream.on("error", reject);
+      });
+    } catch (error) {
+      console.error("Error retrieving file:", error);
+      return null;
+    }
+  }
 }
