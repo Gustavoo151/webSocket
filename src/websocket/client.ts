@@ -102,15 +102,18 @@ io.on("connect", (socket) => {
 
   socket.on("client_send_file", async (params: IFileParams) => {
     try {
+      console.log("Recebendo arquivo:", params.fileName);
       const { fileName, mimeType, fileData, email } = params;
       const socket_id = socket.id;
 
       // Converte base64 para buffer (ByteArrayInputStream concept)
       const fileBuffer = Buffer.from(fileData, "base64");
+      console.log("Tamanho do buffer:", fileBuffer.length);
 
       // Busca o usuário
       const user = await usersService.findByEmail(email);
       if (!user) {
+        console.log("Usuário não encontrado:", email);
         socket.emit("file_upload_error", { message: "Usuário não encontrado" });
         return;
       }
@@ -122,6 +125,7 @@ io.on("connect", (socket) => {
         mimeType,
         user.id
       );
+      console.log("Arquivo salvo:", savedFile);
 
       // Cria mensagem com referência ao arquivo
       const message = await messagesService.create({
@@ -131,6 +135,7 @@ io.on("connect", (socket) => {
         file_name: fileName,
         file_type: mimeType,
       } as IMessageCreate);
+      console.log("Mensagem criada:", message);
 
       // Emite confirmação para o cliente
       socket.emit("file_upload_success", {
@@ -167,10 +172,12 @@ io.on("connect", (socket) => {
 
   socket.on("client_download_file", async (params: { fileId: string }) => {
     try {
+      console.log("Solicitação de download:", params.fileId);
       const { fileId } = params;
       const fileResult = await fileService.getFile(fileId);
 
       if (!fileResult) {
+        console.log("Arquivo não encontrado para download:", fileId);
         socket.emit("file_download_error", {
           message: "Arquivo não encontrado",
         });
@@ -178,6 +185,7 @@ io.on("connect", (socket) => {
       }
 
       const { buffer, fileData } = fileResult;
+      console.log("Arquivo encontrado para download:", fileData.fileName);
 
       // Converte buffer para base64 para envio
       const base64Data = buffer.toString("base64");
