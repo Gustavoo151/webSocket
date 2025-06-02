@@ -302,3 +302,39 @@ socket.on("file_download_error", (data) => {
     btn.disabled = false;
   });
 });
+
+// Funções auxiliares
+function getFileIcon(fileName) {
+  const extension = fileName.split(".").pop().toLowerCase();
+
+  switch (extension) {
+    case "pdf":
+      return "📄";
+    case "doc":
+    case "docx":
+      return "📝";
+    case "xls":
+    case "xlsx":
+      return "📊";
+    case "jpg":
+    case "jpeg":
+    case "png":
+    case "gif":
+    case "bmp":
+      return "🖼️";
+    case "mp4":
+    case "avi":
+    case "mov":
+      return "🎥";
+    case "mp3":
+    case "wav":
+    case "flac":
+      return "🎵";
+    case "zip":
+    case "rar":
+    case "7z":
+      return "📦";
+    default:
+      return "📎";
+  }
+}
