@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 interface IFileData {
   id: string;
   filename: string;
@@ -8,4 +11,12 @@ interface IFileData {
   filePath: string; // Path to the file on the server
 }
 
-class FileService {}
+class FileService {
+  private uploadDir = path.join(__dirname, "../../uploads");
+
+  constructir() {
+    if (!fs.existsSync(this.uploadDir)) {
+      fs.mkdirSync(this.uploadDir, { recursive: true });
+    }
+  }
+}
