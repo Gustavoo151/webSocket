@@ -11,7 +11,6 @@ class MessagesController {
       text,
       user_id,
     });
-
     return response.json(message);
   }
 
