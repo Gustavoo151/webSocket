@@ -200,3 +200,42 @@ socket.on("file_upload_error", (data) => {
 socket.on("admin_send_file_to_client", (data) => {
   addFileMessage(data.fileData.fileName, data.fileData.id, data.message, false);
 });
+
+socket.on("admin_receive_file", (data) => {
+  // Este evento é para o admin, não precisa tratar no cliente
+});
+
+// Função para adicionar mensagem de arquivo na conversa
+function addFileMessage(fileName, fileId, message, isFromUser) {
+  const messagesDiv = document.getElementById("messages");
+
+  const fileDiv = document.createElement("div");
+  fileDiv.className = isFromUser ? "client clearfix" : "admin clearfix";
+
+  const fileSize = getFileSizeString(fileName);
+  const fileIcon = getFileIcon(fileName);
+
+  fileDiv.innerHTML = `
+    <div class="message-header">
+      <span class="${isFromUser ? "name" : "admin_name"}">
+        ${isFromUser ? emailUser : "Agente de suporte"}
+      </span>
+      <span class="message-time">${new Date().toLocaleString()}</span>
+    </div>
+    <div class="message-bubble">
+      <div class="file-message">
+        <span class="file-icon">${fileIcon}</span>
+        <div class="file-info">
+          <div class="file-name">${fileName}</div>
+          <div class="file-size">${fileSize}</div>
+        </div>
+        <button class="file-download-btn" onclick="downloadFile('${fileId}', '${fileName}')">
+          📥 Download
+        </button>
+      </div>
+    </div>
+  `;
+
+  messagesDiv.appendChild(fileDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
