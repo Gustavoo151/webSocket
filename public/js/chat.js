@@ -111,3 +111,10 @@ document
 
     document.getElementById("message_user").value = "";
   });
+
+// ==================== FUNCIONALIDADES DE ARQUIVO ====================
+
+// Configurar botão de anexar arquivo
+document.getElementById("attach_file_btn").addEventListener("click", () => {
+  document.getElementById("file_input").click();
+});
