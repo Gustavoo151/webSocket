@@ -118,3 +118,11 @@ document
 document.getElementById("attach_file_btn").addEventListener("click", () => {
   document.getElementById("file_input").click();
 });
+
+// Manipular seleção de arquivo
+document.getElementById("file_input").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    uploadFile(file);
+  }
+});
