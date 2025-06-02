@@ -100,5 +100,32 @@ io.on("connect", async (socket) => {
     }
   });
 
+  socket.on("admin_download_file", async (params: { fileId: string }) => {
+    try {
+      const { fileId } = params;
+      const fileResult = await fileService.getFile(fileId);
 
+      if (!fileResult) {
+        socket.emit("admin_file_download_error", {
+          message: "Arquivo não encontrado",
+        });
+        return;
+      }
+
+      const { buffer, fileData } = fileResult;
+      const base64Data = buffer.toString("base64");
+
+      socket.emit("admin_file_download_success", {
+        fileId: fileData.id,
+        fileName: fileData.fileName,
+        mimeType: fileData.mimeType,
+        fileData: base64Data,
+      });
+    } catch (error) {
+      console.error("Erro ao baixar arquivo:", error);
+      socket.emit("admin_file_download_error", {
+        message: "Erro ao baixar arquivo",
+      });
+    }
+  });
 });
