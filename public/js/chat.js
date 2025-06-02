@@ -292,3 +292,13 @@ socket.on("file_download_success", (data) => {
     alert("Erro ao baixar arquivo");
   }
 });
+
+socket.on("file_download_error", (data) => {
+  alert(`Erro ao baixar arquivo: ${data.message}`);
+
+  // Restaurar todos os botões de download
+  document.querySelectorAll(".file-download-btn").forEach((btn) => {
+    btn.textContent = "📥 Download";
+    btn.disabled = false;
+  });
+});
