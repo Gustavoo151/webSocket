@@ -239,3 +239,20 @@ function addFileMessage(fileName, fileId, message, isFromUser) {
   messagesDiv.appendChild(fileDiv);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
+// Função para download de arquivo
+function downloadFile(fileId, fileName) {
+  socket.emit("client_download_file", { fileId });
+
+  // Mostrar loading
+  const button = event.target;
+  const originalText = button.textContent;
+  button.textContent = "⏳ Baixando...";
+  button.disabled = true;
+
+  // Restaurar botão após um tempo (em caso de erro)
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.disabled = false;
+  }, 10000);
+}
