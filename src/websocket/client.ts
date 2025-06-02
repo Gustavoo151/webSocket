@@ -164,4 +164,33 @@ io.on("connect", (socket) => {
       });
     }
   });
+
+  socket.on("client_download_file", async (params: { fileId: string }) => {
+    try {
+      const { fileId } = params;
+      const fileResult = await fileService.getFile(fileId);
+
+      if (!fileResult) {
+        socket.emit("file_download_error", {
+          message: "Arquivo não encontrado",
+        });
+        return;
+      }
+
+      const { buffer, fileData } = fileResult;
+
+      // Converte buffer para base64 para envio
+      const base64Data = buffer.toString("base64");
+
+      socket.emit("file_download_success", {
+        fileId: fileData.id,
+        fileName: fileData.fileName,
+        mimeType: fileData.mimeType,
+        fileData: base64Data,
+      });
+    } catch (error) {
+      console.error("Erro ao baixar arquivo:", error);
+      socket.emit("file_download_error", { message: "Erro ao baixar arquivo" });
+    }
+  });
 });
