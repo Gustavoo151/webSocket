@@ -18,9 +18,9 @@ interface IFileParams {
 interface IMessageCreate {
   text: string;
   user_id: string;
-  file_id?: string;
-  file_name?: string;
-  file_type?: string;
+  file_id?: string; // Optional for file attachments
+  file_name?: string; // Optional for file attachments
+  file_type?: string; // Optional for file attachments
 }
 
 io.on("connect", (socket) => {
@@ -130,7 +130,7 @@ io.on("connect", (socket) => {
         file_id: savedFile.id,
         file_name: fileName,
         file_type: mimeType,
-      });
+      } as IMessageCreate);
 
       // Emite confirmação para o cliente
       socket.emit("file_upload_success", {
