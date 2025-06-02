@@ -116,4 +116,18 @@ class FileService {
       return false;
     }
   }
+
+  // Converte buffer para ByteArrayInputStream concept
+  createByteArrayInputStream(buffer: Buffer): NodeJS.ReadableStream {
+    const { Readable } = require("stream");
+
+    const readable = new Readable({
+      read() {
+        this.push(buffer);
+        this.push(null);
+      },
+    });
+
+    return readable;
+  }
 }
