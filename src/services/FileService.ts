@@ -100,4 +100,20 @@ class FileService {
       return null;
     }
   }
+
+  async deleteFile(fileId: string): Promise<boolean> {
+    try {
+      const filePath = path.join(this.uploadDir, `${fileId}.pdf`);
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      return false;
+    }
+  }
 }
