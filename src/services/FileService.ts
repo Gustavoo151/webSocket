@@ -131,3 +131,5 @@ class FileService {
     return readable;
   }
 }
+
+export { FileService, IFileData };
